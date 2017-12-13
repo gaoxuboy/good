@@ -1,0 +1,62 @@
+.my-body {
+    margin-top: 65px;
+    position: relative;
+}
+
+.my-btn {
+    position: absolute;
+    top: 6px;
+    right: 55px;
+}
+
+.my-btn2 {
+    position: absolute;
+    top: 2px;
+    right: -40px;
+}
+
+.my-panel-heading {
+    height: 42px;
+}
+
+.my-search {
+    margin: 8px 0px 3px 10px;
+    position: relative;
+}
+
+.my-sidebar {
+    height: 585px;
+    padding-top: 10px;
+    margin-top: -14px;
+    background-color: #332f2f;
+
+}
+
+.my-sidebar-item {
+    height: 45px;
+    background-color: #332f2f;
+    border-bottom: 1px solid #d4d4d4;
+    margin: 0 -15px;
+}
+
+.my-sidebar-item > a {
+    display: block;
+    text-decoration: none;
+    color: white;
+    text-align: center;
+    line-height: 45px;
+}
+
+.my-sidebar-item:hover {
+    cursor: pointer;
+    background-color: #63a9c8;
+    border-left: 3px solid red;
+}
+
+#my-page {
+    margin: 0;
+}
+
+tr th{
+    text-align: center;
+}

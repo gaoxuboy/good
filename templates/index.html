@@ -1,0 +1,472 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>图书管理系统</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    {# bootstrap的CSS文件 #}
+    <link rel="stylesheet" href="{% static 'my-style.css' %}">
+    {# 自定义格式的CSS文件 #}
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.css' %}">
+    {# 图标的CSS文件 #}
+    <script src="{% static 'jquery-3.2.1.js' %}"></script>
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+    <!--精美弹窗-->
+    <script src="{% static 'sweetalert.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'sweetalert.css' %}">
+</head>
+<body>
+<!--导航 开始-->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">图书管理系统</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse ">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="">欢迎您</a></li>
+                <li><a href="#" style="color: white">{{ user }}</a></li>
+                <li><a href="/logout/">注销</a></li>
+                <li id="mima"><a href="#" data-toggle="modal"
+                                 data-target="#mod_pwd">修改密码</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--导航 结束-->
+<!--主体 开始-->
+<div class="container-fluid my-body">
+    <div class="row">
+        <!--左侧菜单 开始-->
+        <div class="col-sm-3 col-md-2 sidebar my-sidebar">
+            <div class="my-sidebar-item" data-toggle="collapse" data-target="#my-son1"><a href="#"><i
+                    class="fa fa-home" aria-hidden="true"></i>&emsp;图书管理&emsp;&emsp;&emsp;&emsp;&emsp;<i
+                    class="fa fa-chevron-down" aria-hidden="true"></i></a>
+            </div>
+            <ul id="my-son1" class="nav nav-sidebar collapse">
+                <li><a href="/addbook"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;添加图书</a></li>
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;eports</a></li>
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;Analytics</a></li>
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;Export</a></li>
+            </ul>
+            <div class="my-sidebar-item" data-toggle="collapse" data-target="#my-son2"><a href="#"><i
+                    class="fa fa-book" aria-hidden="true"></i>&emsp;作者管理&emsp;&emsp;&emsp;&emsp;&emsp;<i
+                    class="fa fa-chevron-down" aria-hidden="true"></i></a>
+            </div>
+            <ul id="my-son2" class="nav nav-sidebar collapse">
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;查看作者</a></li>
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;添加作者</a></li>
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;One more nav</a></li>
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;Another nav item</a></li>
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;More navigation</a></li>
+            </ul>
+            <div class="my-sidebar-item" data-toggle="collapse" data-target="#my-son3"><a href="#"><i
+                    class="fa fa-apple" aria-hidden="true"></i>&emsp;出版社管理&emsp;&emsp;&emsp;&emsp;<i
+                    class="fa fa-chevron-down" aria-hidden="true"></i></a></div>
+            <ul id="my-son3" class="nav nav-sidebar collapse">
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;查看出版社</a></li>
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;添加出版社</a></li>
+                <li><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>&emsp;Another nav item</a></li>
+            </ul>
+        </div>
+        <!--左侧菜单 结束-->
+        <!--面板 开始-->
+        <div class="container col-sm-9 col-md-10" id="content">
+            <div class="panel panel-primary">
+                <div class="panel-heading my-panel-heading">
+                    <h3 class="panel-title ">Panel title</h3>
+                    <!--添加按钮 开始-->
+                    <a href="/addbook">
+                        <button type="button" class="btn btn-success btn-sm my-btn">添加</button>
+                    </a>
+                    <!--添加按钮 结束-->
+                </div>
+                <div class="col-sm-2 col-xs-4 my-search">
+                    <form action="/search/" method="post">
+                        <input type="text" class="form-control" placeholder="搜索..." name="se">
+                        <button type="submit" class="btn btn-info btn-sm my-btn2" id="search">搜索</button>
+                    </form>
+                </div>
+                <div class="panel-body">
+                    <!--表格开始-->
+                    <div class="bs-example" data-example-id="contextual-table">
+                        <table class="table">
+                            <tbody class="container" style="text-align: center">
+                            <tr style="text-align: center">
+                                <th>id</th>
+                                <th>书名</th>
+                                <th>作者</th>
+                                <th>价格</th>
+                                <th>分类</th>
+                                <th>出版社</th>
+                                <th>出版日期</th>
+                                <th>操作</th>
+                            </tr>
+                            {% for book in book_list %}
+                                <tr>
+                                    <th>{{ forloop.counter0|add:book_list.start_index }}</th>
+                                    <td>{{ book.title }}</td>
+                                    <td>{% for foo in book.authors.select_related %} {{ foo }}{% endfor %}</td>
+                                    <td>{{ book.price }}</td>
+                                    <td>{{ book.classify.name }}</td>
+                                    <td>{{ book.publisher.name }}</td>
+                                    <td>{{ book.publication_date|date:'Y-m-d' }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-warning btn-xs edit" data-toggle="modal"
+                                                data-target="#edit_book">修改
+                                        </button>
+                                        <a>
+                                            <button type="button" class="btn btn-danger btn-xs" value={{ book.id }}>删除
+                                            </button>
+                                        </a>
+                                    </td>
+                                    <td class="hide">{{ book.id }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="8" style="color: red;padding-top: 20px">没有符合条件的结果</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--表格结束-->
+                    <!--分页 开始-->
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-offset-5">
+                                <nav aria-label="...">
+                                    <ul class="pagination" id="my-page">
+                                        {% if book_list.has_previous %}
+                                            <li class="calendarnav-previous"><a
+                                                    href="?page={{ book_list.previous_page_number }}">上一页</a></li>
+                                        {% else %}
+                                            <li class="disabled">
+                                                <a href="#" aria-label="Previous">上一页</a></li>
+
+                                        {% endif %}
+
+                                        {% for num in paginator.page_range %}
+                                            {% if num == currentPage %}
+                                                <li class="item active"><a href="?page={{ num }}">{{ num }}</a></li>
+                                            {% else %}
+                                                <li class="item "><a href="?page={{ num }}">{{ num }}</a></li>
+
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if book_list.has_next %}
+                                            <li class="next"><a
+                                                    href="?page={{ book_list.next_page_number }}">下一页</a></li>
+                                        {% else %}
+                                            <li class="disabled next">
+                                                <a href="#">下一页</a></li>
+
+                                        {% endif %}
+
+
+                                        {#                                <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">«</span></a>#}
+                                        {#                                </li>#}
+                                        {#                                <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>#}
+                                        {#                                <li><a href="#">2</a></li>#}
+                                        {#                                <li><a href="#">3</a></li>#}
+                                        {#                                <li><a href="#">4</a></li>#}
+                                        {#                                <li><a href="#">5</a></li>#}
+                                        {#                                <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>#}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <!--分页 结束-->
+                </div>
+
+            </div>
+        </div>
+        <!--面板 结束-->
+    </div>
+
+</div>
+<!--模态框 开始-->
+<div class="modal fade" tabindex="-1" role="dialog" id="edit_book">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/add/" method="post">
+                    <div class="form-group">
+                        <label for="title">书名</label>
+                        <input type="text" class="form-control" id="title" placeholder="title" name="title">
+                    </div>
+                    <div class="form-group">
+                        <label for="price">价格</label>
+                        <input type="text" class="form-control" id="price" placeholder="00.00" name="price">
+                    </div>
+                    <div class="form-group">
+                        <label for="classify">分类</label>
+                        <select class="form-control" name="classify" id="classify">
+                            {% for classify in classify_list %}
+                                <option value={{ classify.id }}>{{ classify.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">出版日期</label>
+                        <input type="date" class="form-control" id="date" name="date">
+                    </div>
+                    <div class="form-group">
+                        <label for="author">作者</label>
+                        <select class="form-control" name="author" id="author" multiple size="2">
+                            {% for author in author_list %}
+                                <option value={{ author.id }}>{{ author.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="publish">出版社</label>
+                        <select class="form-control" name="publish" id="publish">
+                            {% for publish in publish_list %}
+                                <option value={{ publish.id }}>{{ publish.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary save" data-dismiss="modal">Save changes</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--模态框 结束-->
+
+<!--模态框密码界面 开始-->
+<div class="modal fade" tabindex="-1" role="dialog" id="mod_pwd" style="padding-top: 100px">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">密码修改</h4>
+            </div>
+            <div class="modal-body">
+                <form action="/mima/" method="post">
+                    <div class="form-group">
+                        <label for="title">原始密码</label>
+                        <input type="password" class="form-control" id="old_pwd" placeholder="" name="old_pwd">
+                    </div>
+                    <div class="form-group">
+                        <label for="title">新密码</label>
+                        <input type="password" class="form-control" id="new_pwd" placeholder="" name="new_pwd">
+                    </div>
+                    <div class="form-group">
+                        <label for="title">确认密码</label>
+                        <input type="password" class="form-control" id="que_pwd" placeholder="" name="que_pwd">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary pwd_save" data-dismiss="modal">Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--模态框密码界面 结束-->
+
+<!--主体 结束-->
+  <!--<th>{{ forloop.counter0|add:book_list.start_index }}</th>-->
+<!--<td>{{ book.title }}</td>-->
+<!--<td>{% for foo in book.authors.select_related %} {{ foo }}{% endfor %}</td>-->
+<!--<td>{{ book.price }}</td>-->
+<!--<td>{{ book.classify.name }}</td>-->
+<!--<td>{{ book.publisher.name }}</td>-->
+<!--<td>{{ book.publication_date|date:'Y-m-d' }}</td>-->
+
+<script>
+
+    $(".table").on("click", ".edit", function () {
+        $edit_row = $(this).parents().eq(1);//
+
+        $author = $edit_row.children().eq(2).text().replace(' ', '').replace('\n', '').split(' ');
+
+        $("input").eq(1).val($edit_row.children().eq(1).text());
+        $("input").eq(2).val($edit_row.children().eq(3).text());
+        $("input").eq(3).val($edit_row.children().eq(6).text());
+
+
+        $.each($("option"), function () {
+            $dict = [$edit_row.children().eq(5).text(), $edit_row.children().eq(4).text()];
+            if ($(this).text() == $dict[0] || $(this).text() == $dict[1] ||
+                $.inArray($(this).text(), $author, 0) != -1) {
+                $(this).prop("selected", true)
+            }
+            else {
+                $(this).prop("selected", false)
+            }
+        });
+    });
+
+    $("#mima").click(function () {
+        $("input:gt(3)").val('').nextAll().remove()
+    })
+
+    $("#old_pwd").blur(function () {
+        $old_pwd = $(this).val();
+        console.log($old_pwd)
+        $.ajax({
+            url: '/mima/',
+            type: "POST",
+            data: {"old_pwd": $old_pwd},
+            success: function (data) {
+                data = JSON.parse(data);
+                if (data['state'] != null) {
+                    $("#old_pwd").nextAll().remove()
+                    $span = $('<span>').text(data['state']).css({
+                        "display": "block",
+                        "color": "red",
+                        "margin-top": '5px'
+                    });
+                    $("#old_pwd").after($span)
+                }
+                else {
+                    $("#old_pwd").nextAll().remove()
+                }
+
+            }
+        })
+    });
+
+    $("#new_pwd").blur(function () {
+        if ($("#new_pwd").val() == "") {
+            $("#new_pwd").nextAll().remove();
+            $span = $('<span>').text("请输入新密码").css({"display": "block", "color": "red", "margin-top": '5px'});
+            $("#new_pwd").after($span)
+        }
+
+        else if ($("#new_pwd").val().length < 6) {
+            $("#new_pwd").nextAll().remove();
+            $span = $('<span>').text("密码长度至少为6位").css({"display": "block", "color": "red", "margin-top": '5px'});
+            $("#new_pwd").after($span)
+        }
+        else {
+            $("#new_pwd").nextAll().remove()
+        }
+    });
+
+    $("#que_pwd").blur(function () {
+        if ($("#que_pwd").val() == "") {
+            $("#que_pwd").nextAll().remove();
+            $span = $('<span>').text("请输入确认密码").css({"display": "block", "color": "red", "margin-top": '5px'});
+            $("#que_pwd").after($span)
+        }
+
+        else if ($("#new_pwd").val() != $("#que_pwd").val()) {
+            $("#que_pwd").nextAll().remove();
+            $span = $('<span>').text("两次密码输入不一致，请重新输入").css({"display": "block", "color": "red", "margin-top": '5px'});
+            $("#que_pwd").after($span)
+        }
+        else {
+            $("#que_pwd").nextAll().remove()
+        }
+    });
+
+    $(".pwd_save").click(function () {
+        var message = {};
+        message['old_pwd'] = $('#old_pwd').val()
+        message['new_pwd'] = $('#new_pwd').val()
+        message['que_pwd'] = $('#que_pwd').val()
+
+        if ($("input:gt(3)").nextAll().length != 0) {
+            return false
+        }
+        else {
+            $.ajax({
+                url: '/savemima/',
+                type: "POST",
+                data: message,
+                success: function (data) {
+                    data = JSON.parse(data);
+                    console.log(data)
+                    swal({title: "秘密修改成功!", text: "请重新登录.", type: "success"}, function () {
+                        window.location.href = '/logout/'
+
+                    })
+                }
+            })
+
+        }
+    });
+
+    $(".save").click(function () {
+        var message = {};
+        message['id'] = $edit_row.children().eq(8).text();
+        message['title'] = $("[name='title']").val();
+        message['price'] = $("[name='price']").val();
+        message['classify'] = $("[name='classify']").val();
+        message['date'] = $("[name='date']").val();
+        message['author'] = $("[name='author']").val();
+        message['publish'] = $("[name='publish']").val();
+
+        $.ajax({
+            url: '/edit/',
+            type: "POST",
+            data: message,
+
+            success: function (data) {
+                data = JSON.parse(data);
+                console.log(data, typeof data);
+                var authors = '';
+                $.each(data['author'], function (i, x) {
+                    authors = authors + " " + x
+
+                });
+                $edit_row.children().eq(1).text(data['title']);
+                $edit_row.children().eq(2).text(authors);
+                $edit_row.children().eq(3).text(data['price']);
+                $edit_row.children().eq(4).text(data['classify']);
+                $edit_row.children().eq(5).text(data['publish']);
+                $edit_row.children().eq(6).text(data['date']);
+            }
+        })
+    });
+
+    $(".table").on("click", ".btn-danger", function () {
+        $btn = $(this);
+        console.log($btn.val());
+        swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this imaginary file!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: false
+            },
+            function () {
+                swal("Deleted!", "Your imaginary file has been deleted.", "success");
+                $btn.parents().eq(2).remove();
+                $.ajax({
+                    url: '/dell/',
+                    type: "POST",
+                    data: {"id": $btn.val()},
+
+                    success: function () {
+                        $("body").load("/index/");
+                    }
+                })
+            });
+    });
+
+
+</script>
+</body>
+</html>
